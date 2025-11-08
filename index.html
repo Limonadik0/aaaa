@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио MOSHAN</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Общие переменные и стили */
+        :root {
+            --primary-color: #fca5a5; /* Розовый/лососевый для акцентов */
+            --text-light: #f3f4f6; /* Светлый текст */
+            --header-height: 4rem;
+        }
+        
+        /* 1. Стили для ЯРКОГО Параллакс Фона */
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-light);
+            scroll-behavior: smooth;
+            
+            /* ЯРКИЙ ДЕКОРАТИВНЫЙ ФОН с эффектом параллакса */
+            background-color: #1e0a24; 
+            /* ВНИМАНИЕ: Оставляю вашу ссылку на изображение "фото.avif" */
+            background-image: url('фото.avif'); 
+            background-attachment: fixed; /* Эффект параллакса (скольжения) */
+            background-size: cover;
+            background-position: center center;
+        }
+        
+        /* 2. Делаем секции БОЛЕЕ прозрачными (снижаем opacity) */
+        #prices {
+            /* Уменьшаем непрозрачность до 80% */
+            background-color: rgba(31, 41, 55, 0.8); 
+            backdrop-filter: blur(2px); 
+        }
+        #contact {
+            /* Уменьшаем непрозрачность до 85% */
+            background-color: rgba(17, 24, 39, 0.85);
+        }
+        .bg-gray-900\/90 { /* Хедер */
+            /* Уменьшаем непрозрачность до 85% */
+            background-color: rgba(17, 24, 39, 0.85);
+        }
+        .bg-card {
+            /* Используем rgba для карточек, чтобы сделать их более прозрачными */
+            background-color: rgba(31, 41, 55, 0.8); 
+        }
+
+        .text-accent {
+            color: var(--primary-color);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        /* --- Стили для Карусели/Слайд-шоу с прокруткой --- */
+        .carousel-container {
+            /* Высота экрана минус высота шапки */
+            height: calc(100vh - var(--header-height)); 
+            position: relative;
+            overflow: hidden; /* Скрываем боковую прокрутку */
+        }
+        
+        .slides-wrapper {
+            display: flex; /* Располагаем слайды горизонтально */
+            height: 100%;
+            /* Плавный свайп-эффект */
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.4, 1); 
+            /* ИСПРАВЛЕНИЕ 1: Убеждаемся, что контейнер слайдов выше фона */
+            position: relative; 
+            z-index: 10;
+        }
+        
+        .slide {
+            /* Каждый слайд занимает 100% ширины контейнера */
+            min-width: 100vw; 
+            height: 100%;
+            flex-shrink: 0; /* Не даем слайдам сжиматься */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 3. Стили для ЕДИНОГО размытого фона (БЛЮР: 7px) */
+        #currentSlideBg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            /* Усилено затемнение (brightness 0.3) для лучшего контраста с текстом */
+            filter: blur(7px) brightness(0.3); 
+            /* Немного увеличиваем, чтобы не было видно краев при блюре */
+            transform: scale(1.1); 
+            z-index: 5; /* За основным изображением */
+            /* Плавный переход для самого фона - это ключевое изменение! */
+            transition: background-image 0.8s ease-in-out, opacity 0.3s; 
+            /* Начальное затемнение, пока нет изображения */
+            background-color: #111827;
+        }
+        /* ВАЖНО: Размещаем его абсолютно относительно carousel-container */
+        #portfolio {
+            position: relative;
+        }
+
+        .slide img {
+            width: auto;
+            max-height: 90%; /* Оставляем немного места сверху и снизу */
+            max-width: 90%;
+            object-fit: contain; /* Изображение будет максимально большим, но видно полностью */
+            border-radius: 0.75rem; /* Загругленные углы для главного изображения */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7); /* Сильная тень для выделения */
+            position: relative;
+            /* ИСПРАВЛЕНИЕ 2: Увеличиваем z-index для самого изображения, чтобы гарантировать его видимость */
+            z-index: 20; 
+        }
+        /* Кнопки и Интро-текст должны быть над всем */
+        .nav-btn, .absolute { 
+            z-index: 30; 
+        }
+
+        /* --- Обновленные стили для стильных кнопок --- */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(31, 41, 55, 0.6); /* Более темный, но прозрачный фон */
+            color: var(--primary-color); /* Акцентный цвет для стрелок */
+            padding: 0.75rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            border-radius: 9999px; /* Круглые кнопки */
+            width: 3rem; 
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Красивая тень */
+        }
+        .nav-btn:hover {
+            background-color: var(--primary-color); /* При наведении становится акцентным цветом */
+            color: #111827; /* Темный цвет для стрелки при наведении */
+            transform: translateY(-50%) scale(1.05); /* Легкий эффект поднятия */
+        }
+        #prevBtn { left: 1rem; } /* Отступ от края */
+        #nextBtn { right: 1rem; } /* Отступ от края */
+
+        /* Адаптивные колонки для прайс-листа */
+        .price-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .price-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .social-link {
+            transition: color 0.3s ease;
+            color: var(--primary-color); /* Иконки в акцентном цвете */
+        }
+        .social-link:hover {
+            color: #fff; /* Белый цвет при наведении */
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Навигация -->
+    <header class="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-md shadow-lg" style="height: var(--header-height);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-accent tracking-wider">M O S H A N</a>
+            <nav class="space-x-4">
+                <a href="#portfolio" class="text-gray-300 hover:text-accent transition duration-300">Портфолио</a>
+                <a href="#prices" class="text-gray-300 hover:text-accent transition duration-300">Прайс-лист</a>
+                <a href="#contact" class="text-gray-300 hover:text-accent transition duration-300">Контакты</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- 2. Секция Портфолио (Слайд-шоу с прокруткой) -->
+        <section id="portfolio" class="carousel-container">
+            
+            <!-- ЕДИНСТВЕННЫЙ РАЗМЫТЫЙ ФОН - размещен здесь, чтобы занимать 100% viewport, а не 500% -->
+            <div id="currentSlideBg"></div>
+
+            <div class="slides-wrapper" id="slidesWrapper">
+                
+                <!-- Слайд 1 (Изображения оставлены как есть по вашему запросу) -->
+                <!-- ВНИМАНИЕ: Элементы .slide-bg удалены из слайдов -->
+                <div class="slide">
+                    <img src="fool.jpg" alt="Пример работы 1 (Headshot)">
+                </div>
+                
+                <!-- Слайд 2 -->
+                <div class="slide">
+                    <img src="gift.jpg" alt="Пример работы 2 (Halfbody)">
+                </div>
+                
+                <!-- Слайд 3 -->
+                <div class="slide">
+                    <img src="ggg.jpg" alt="Пример работы 3 (Full Color)">
+                </div>
+                
+                <!-- Слайд 4 -->
+                <div class="slide">
+                    <img src="bear.jpg" alt="Пример работы 4 (Sketch B&W)">
+                </div>
+
+                <!-- Слайд 5 -->
+                <div class="slide">
+                    <img src="bboy.jpg" alt="Пример работы 5 (Sketch B&W)">
+                </div>
+                
+            </div>
+            
+            <!-- Кнопки навигации -->
+            <button id="prevBtn" class="nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="nextBtn" class="nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            
+        </section>
+
+        <!-- 3. Секция Прайс-лист -->
+        <section id="prices" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center mb-4">
+                     Прайс-лист 🤩
+                </h2>
+                <p class="text-center text-gray-400 mb-12">
+                    Цены указаны в рублях (руб) и тенге (тг)
+                </p>
+
+                <div class="price-grid">
+                    <!-- Блок 1: Полноцветные работы -->
+                    <div class="bg-card p-6 rounded-xl shadow-2xl border-t-4 border-accent transition duration-300 hover-lift">
+                        <h3 class="text-2xl font-semibold mb-4 text-accent">♥️ ПОЛНОЦЕНКИ</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex justify-between items-center border-b border-gray-700 pb-2">
+                                <span>Хэд (голова по плечи)</span>
+                                <span class="font-bold">600 руб / 4000 тг</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-gray-700 pb-2">
+                                <span>Халф (по пояс)</span>
+                                <span class="font-bold">800 руб / 5300 тг</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-gray-700 pb-2">
+                                <span>По колено/бедра</span>
+                                <span class="font-bold">950 руб / 6400 тг</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Фулл (полный рост)</span>
+                                <span class="font-bold">1100 руб / 7400 тг</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Блок 2: Скетчи ЧБ, Фон и Дополнительные условия -->
+                    <div class="bg-card p-6 rounded-xl shadow-2xl border-t-4 border-accent transition duration-300 hover-lift">
+                        <h3 class="text-2xl font-semibold mb-4 text-accent">♥️ СКЕТЧИ ЧБ</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="border-b border-gray-700 pb-2">
+                                <div class="flex justify-between items-center">
+                                    <span>Хэд</span>
+                                    <span class="font-bold">200 руб / 1400 тг</span>
+                                </div>
+                                <span class="text-sm text-gray-400 block mt-1">(цвет +50 руб / 350 тг)</span>
+                            </li>
+                            <li class="border-b border-gray-700 pb-2">
+                                <div class="flex justify-between items-center">
+                                    <span>Халф</span>
+                                    <span class="font-bold">300 руб / 2000 тг</span>
+                                </div>
+                                <span class="text-sm text-gray-400 block mt-1">(цвет +100 руб / 700 тг)</span>
+                            </li>
+                            <li class="border-b border-gray-700 pb-2">
+                                <div class="flex justify-between items-center">
+                                    <span>Фулл</span>
+                                    <span class="font-bold">400 руб / 2700 тг</span>
+                                </div>
+                                <span class="text-sm text-gray-400 block mt-1">(цвет +150 руб / 1000 тг)</span>
+                            </li>
+                        </ul>
+                        
+                        <h3 class="text-2xl font-semibold mt-6 mb-4 text-accent">♥️ ФОН</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex justify-between items-center">
+                                <span>Заливка/градиент/простой эффект</span>
+                                <span class="font-bold text-green-400">бесплатно</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Фон средней сложности</span>
+                                <span class="font-bold">от 250 до 500 руб</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>Всё сложнее</span>
+                                <span class="font-bold text-yellow-400">цена договорная</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Условия и Ограничения -->
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Раздел 1: Рисую / Не рисую -->
+                    <div class="bg-card p-6 rounded-xl shadow-xl transition duration-300 hover-lift">
+                        <h3 class="text-xl font-semibold mb-3">🦋 РИСУЮ / 💔 НЕ РИСУЮ</h3>
+                        <div class="flex justify-between text-sm">
+                            <ul class="text-gray-300 space-y-1">
+                                <li class="text-accent font-medium">РИСУЮ:</li>
+                                <li>Кровь, жестокость</li>
+                                <li>Всё, что не входит в "Не рисую"</li>
+                                <li>Чиби</li>
+                            </ul>
+                            <ul class="text-gray-300 space-y-1 pl-4">
+                                <li class="text-red-400 font-medium">НЕ РИСУЮ:</li>
+                                <li>Педо, зоо, некро, гуро</li>
+                                <li>Фурри и т.п.</li>
+                                <li>Пони, сложные механизмы</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Раздел 2: Условия -->
+                    <div class="bg-card p-6 rounded-xl shadow-xl md:col-span-2 transition duration-300 hover-lift">
+                        <h3 class="text-xl font-semibold mb-3">💋 УСЛОВИЯ</h3>
+                        <ul class="text-sm text-gray-300 space-y-2 list-disc list-inside">
+                            <li>+ 90% за дополнительного персонажа.</li>
+                            <li>Доплата за NSFW контент договорная (ориентировочно + 30%).</li>
+                            <li>Работа выкладывается в соцсети, за отказ + 80% (на приватность).</li>
+                            <li>Использование в коммерческих целях + 50%.</li>
+                            <li>За высокую сложность автор в праве попросить доплату.</li>
+                            <li>Полная оплата сразу после одобренного скетча.</li>
+                            <li>Дедлайн договорный, от 3 дней до 1.5 месяца. **В СРЕДНЕМ 2-3 недели!**</li>
+                            <li>Автор в праве отказать, если ему не понравилась идея или другие кое-какие моменты.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Раздел Оплаты и Контакты -->
+                <div class="mt-12 text-center p-8 bg-gray-900 rounded-xl shadow-3xl">
+                    <h3 class="text-xl font-semibold mb-4 text-accent">🎀 ОПЛАТА & 📞 КОНТАКТЫ</h3>
+                    <div class="flex flex-col md:flex-row justify-center items-center md:space-x-12 space-y-4 md:space-y-0 text-lg">
+                        <p class="text-gray-300">
+                            Оплата: Любые популярные банки России, Беларуси, Казахстана. Комиссия за ваш счёт.
+                        </p>
+                        <div class="w-px h-10 bg-gray-700 hidden md:block"></div>
+                        <p class="text-red-400 font-bold">
+                            КОММИШКИ НА НОЯБРЬ ЗАКРЫТЫ
+                            <br><span class="text-base text-gray-400 font-normal">Лучше заранее забронировать места!</span>
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <p class="text-xl font-medium text-gray-200">
+                            🤩 Писать в личные сообщения:
+                        </p>
+                        <a href="https://t.me/Lemonadik_Moshan" target="_blank" class="inline-block mt-2 text-2xl font-bold text-accent hover:underline transition duration-300">
+                            @Lemonadik_Moshan (Telegram)
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. Секция Контакты / Футер -->
+        <footer id="contact" class="py-12 border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 class="text-2xl font-bold mb-4 text-gray-200">Арт телеграм-канал:</h3>
+                <div class="flex justify-center space-x-6 text-3xl">
+                    <!-- Telegram Chat Icon (Личный контакт) -->
+                    <a href="https://t.me/Lemonadik_Moshan_art" target="_blank" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm5.636 8.526l-2.071 9.771c-.139.656-.519.813-1.071.503l-3.159-2.324-1.517 1.464c-.16.155-.292.285-.595.285l.214-3.048 5.567-5.054c.24-.216-.051-.336-.37-.107l-6.848 4.316-2.95-.928c-.643-.203-.655-.644-.124-.8l10.32-3.805c.531-.19 1.002.124.838.924z"/></svg>
+                    </a>
+                    
+                </div>
+                <p class="mt-8 text-sm text-gray-500">
+                    &copy; 2025 Art Portfolio by Asyu. Все права защищены.
+                </p>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // JS для работы Слайд-шоу с эффектом свайпа
+        const slidesWrapper = document.getElementById('slidesWrapper'); // Контейнер, который будет сдвигаться
+        const slides = document.querySelectorAll('.slide');
+        const currentSlideBg = document.getElementById('currentSlideBg'); // Наш новый глобальный элемент фона
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        /**
+         * Переключает слайд и обновляет размытый фон.
+         * @param {number} index - Индекс слайда, который нужно показать.
+         */
+        function showSlide(index) {
+            // Корректируем индекс, чтобы он оставался в пределах массива (зацикливание)
+            if (index >= totalSlides) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = index;
+            }
+
+            // Сдвигаем контейнер на 100vw * номер текущего слайда
+            const offset = -currentSlide * 100;
+            slidesWrapper.style.transform = `translateX(${offset}vw)`;
+            
+            // ==========================================================
+            // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Обновление размытого фона
+            // Теперь мы обновляем ОДИН глобальный элемент фона
+            // ==========================================================
+            const activeSlide = slides[currentSlide];
+            try {
+                // Получаем URL основного изображения
+                const imageUrl = activeSlide.querySelector('img').src;
+
+                // Устанавливаем его как фон для ГЛОБАЛЬНОГО элемента
+                currentSlideBg.style.backgroundImage = `url('${imageUrl}')`;
+            } catch (e) {
+                console.error("Ошибка загрузки фонового изображения:", e);
+                // В случае ошибки показываем темный фон
+                currentSlideBg.style.backgroundImage = 'none';
+                currentSlideBg.style.backgroundColor = '#111827';
+            }
+            // ==========================================================
+        }
+
+        // Обработчики кнопок
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+
+        // ==========================================================
+        // Обработчики свайпов для мобильных устройств
+        // ==========================================================
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        const carouselContainer = document.getElementById('portfolio');
+
+        carouselContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        carouselContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleGesture();
+        }, false);
+
+        function handleGesture() {
+            const threshold = 50; // Минимальное расстояние для свайпа
+            const deltaX = touchEndX - touchStartX;
+
+            if (deltaX > threshold) {
+                // Свайп вправо (Предыдущий слайд)
+                showSlide(currentSlide - 1);
+            } else if (deltaX < -threshold) {
+                // Свайп влево (Следующий слайд)
+                showSlide(currentSlide + 1);
+            }
+        }
+        // ==========================================================
+
+
+        // Запуск слайд-шоу при загрузке
+        window.onload = function() {
+            // Устанавливаем общую ширину контейнера = (Количество слайдов * 100vw)
+            slidesWrapper.style.width = `${totalSlides * 100}vw`; 
+            
+            // Показываем первый слайд (это также установит фон)
+            showSlide(currentSlide);
+        };
+        
+        // Добавляем обработчик изменения размера окна для корректного пересчета ширины
+        window.addEventListener('resize', () => {
+             // После изменения размера показываем текущий слайд, чтобы transform пересчитался относительно нового vw
+            showSlide(currentSlide); 
+        });
+    </script>
+
+</body>
+</html>
